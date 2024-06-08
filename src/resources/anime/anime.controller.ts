@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
-import configClient from "../elasticsearch/elasticsearch.services";
+import animeServices from "./anime.services";
+import { IQueryAnime } from "./anime.types";
+import { sanitizeString } from "../../utils/sanitizeString";
 
 const read = async (req: Request, res: Response) => {
-    const client = configClient()
     try{
-        const {hits} = await client.search({
-            "index": "anime",
-            "query": {
-                match: {
-                    "title": "one punch man"
-                }
-            }
-        })
+        const { query } = req.body as IQueryAnime;
+        const defaultMaxResults = 10;
 
-        res.status(200).json(hits.hits);
+        const cleadQuery = sanitizeString(query);
+
+        const animes = await animeServices.search(cleadQuery, defaultMaxResults);
+
+        res.status(200).json(animes);
+
     }
     catch (err){
         res.status(400).json(err);

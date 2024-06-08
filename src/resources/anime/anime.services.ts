@@ -1,23 +1,24 @@
-import { Client } from '@elastic/elasticsearch'
+import configClient from "../elasticsearch/elasticsearch.services"
+import { IAnimeSource } from "./anime.types";
+import { estypes } from '@elastic/elasticsearch'
 
-const client = new Client({ node: 'http://localhost:9200' });
+const search = async (query: string, max_result: number) => {
+    const client = configClient();
 
-// const search = async (query) => {
-//     try {
-//       const { body } = await client.search({
-//         index: 'anime',
-//         body: {
-//           query: {
-//             multi_match: {
-//               query: query,
-//               fields: ['title^2', 'synopsis^1']
-//             }
-//           }
-//         }
-//       });
-//       return body.hits.hits;
-//     } catch (error) {
-//       console.error(error);
-//       throw error;
-//     }
-//   };
+    const { hits }: estypes.SearchResponse = await client.search<IAnimeSource>({
+        "index": "anime",
+        "query": {
+            "multi_match": {
+              "query": query,
+              "fields": ["title^2", "synopsis^1"]
+            }
+        },
+        "size": max_result
+    });
+
+    const animes: IAnimeSource[] = hits.hits.map( (anime: any) => anime._source)
+
+    return animes;
+}
+
+export default { search }

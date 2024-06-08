@@ -5,7 +5,6 @@ import animeController from "./anime.controller";
 
 const animeRouter = Router();
 
-
-animeRouter.get("/:query", animeController.read);
+animeRouter.post("/", animeController.read);
 
 export default animeRouter;
