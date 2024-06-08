@@ -1,5 +1,5 @@
 import configClient from "../elasticsearch/elasticsearch.services"
-import { IAnimeSource } from "./anime.types";
+import { IAnimeSource, TAnimeSimplified } from "./anime.types";
 import { estypes } from '@elastic/elasticsearch'
 
 const search = async (query: string, max_result: number) => {
@@ -21,4 +21,45 @@ const search = async (query: string, max_result: number) => {
     return animes;
 }
 
-export default { search }
+const simplifiedVersion = (animes: IAnimeSource[]) => {
+
+    const animesSimplified: TAnimeSimplified[] = animes.map((
+        {
+            anime_id,
+            anime_url,
+            title,
+            synopsis,
+            main_pic,
+            type,
+            source_type,
+            num_episodes,
+            status,
+            start_date,
+            end_date,
+            season,
+            studios,
+            genres,
+            score,
+            pics,
+        }: IAnimeSource) => ({
+            anime_id,
+            anime_url,
+            title,
+            synopsis,
+            main_pic,
+            type,
+            source_type,
+            num_episodes,
+            status,
+            start_date,
+            end_date,
+            season,
+            studios,
+            genres,
+            score,
+            pics,
+        }));
+    return animesSimplified
+}
+
+export default { search, simplifiedVersion }

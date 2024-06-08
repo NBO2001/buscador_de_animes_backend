@@ -1,3 +1,8 @@
+export interface IQueryAnime{
+  "query": string;
+  "simplified_version"?: boolean;
+}
+
 export interface IAnime {
     _index: string;
     _id: string;
@@ -5,9 +10,6 @@ export interface IAnime {
     _source: IAnimeSource;
 }
 
-export interface IQueryAnime{
-  "query": string
-}
   
 export interface IAnimeSource {
     anime_id: number;
@@ -49,4 +51,7 @@ export interface IAnimeSource {
     clubs: string;
     pics: string;
 }
+
+
+export type TAnimeSimplified = Pick<IAnimeSource, "anime_id" | "anime_url" | "title" | "synopsis" | "num_episodes" | "main_pic" | "pics" | "type" | "source_type" | "season" | "genres" | "status" | "studios" | "start_date" | "end_date" | "score" >
   
