@@ -1,0 +1,1 @@
+# Api para um buscador de anime
