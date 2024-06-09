@@ -1,8 +1,19 @@
 import configClient from "../elasticsearch/elasticsearch.services"
 import { IAnimeSource, TAnimeSimplified } from "./anime.types";
-import { estypes } from '@elastic/elasticsearch'
+import { estypes } from '@elastic/elasticsearch';
 
-const search = async (query: string, max_result: number) => {
+export interface ISearch{
+  query: string;
+  max_result?: number;
+  from?: number;
+}
+
+export interface IResposeAnimeSearch{
+  animes: IAnimeSource[];
+  total: number;
+}
+
+const search = async ( {query, max_result, from} : ISearch) => {
     const client = configClient();
 
     const { hits }: estypes.SearchResponse = await client.search<IAnimeSource>({
@@ -73,12 +84,15 @@ const search = async (query: string, max_result: number) => {
             ]
           }
         },
-        "size": max_result
+        "size": max_result ? max_result : 10,
+        "from": from ? from : 0
     });
 
     const animes: IAnimeSource[] = hits.hits.map( (anime: any) => anime._source)
 
-    return animes;
+    const total = hits.total ? (hits.total as any)?.value : 0;
+    
+    return { animes, total } as IResposeAnimeSearch;
 }
 
 const simplifiedVersion = (animes: IAnimeSource[]) => {
