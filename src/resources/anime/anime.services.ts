@@ -8,10 +8,70 @@ const search = async (query: string, max_result: number) => {
     const { hits }: estypes.SearchResponse = await client.search<IAnimeSource>({
         "index": "anime",
         "query": {
-            "multi_match": {
-              "query": query,
-              "fields": ["title^2", "synopsis^1"]
-            }
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "title": {
+                    "query": query,
+                    "boost": 5.1
+                  }
+                }
+              },
+              {
+                "match": {
+                  "title": {
+                    "query": query,
+                    "boost": 8,
+                    "operator": "and"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "title": {
+                    "query": query,
+                    "boost": 1.1
+                  }
+                }
+              },
+              {
+                "match_phrase": {
+                  "synopsis": query
+                }
+              },
+              {
+                "rank_feature": {
+                  "field": "score",
+                  "boost": 3.0
+                }
+              },
+              {
+                "rank_feature": {
+                  "field": "dropped_count",
+                  "boost": 1.2
+                }
+              },
+              {
+                "rank_feature": {
+                  "field": "score_count",
+                  "boost": 3.5
+                }
+              },
+              {
+                "rank_feature": {
+                  "field": "completed_count",
+                  "boost": 2.5
+                }
+              },
+              {
+                "rank_feature": {
+                  "field": "num_episodes",
+                  "boost": 1.9
+                }
+              }
+            ]
+          }
         },
         "size": max_result
     });
